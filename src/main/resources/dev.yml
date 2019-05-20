@@ -1,0 +1,37 @@
+#- $foo: [null,{}]
+#- $hoge: 1
+#- $fuga: 1
+#- "$foo[$hoge].wao": boo
+#- print: "$foo[$fuga][wao]"
+#  - 8080
+#  - $addFunc:
+#      function:
+#      - [a, b]
+#      - do:
+#        - $a.add
+#        - $b
+#  - $list: []
+#  - do: [$addFunc, $list, 5]
+#  - do: [$list.add, aaa]
+#  - print: {do: $list.size}
+#  - print: {do: [$list.get, 1]}
+#  - $server:
+#      new:
+#        - "org.eclipse.jetty.server.Server"  
+#        - 8080
+#  - do: $server.start
+#  - do: $server.join
+
+- $router:
+    do: Handlers.routing
+- handler: ["/foobar", "get"]
+- handler: ["/fooboo", "get"]
+- $builder:
+    do: Undertow.builder
+- $builder:
+    do: [$builder.addHttpListener, 8080, localhost]
+- $builder:
+    do: [$builder.setHandler, $router]
+- $server:
+    do: $builder.build
+- do: $server.start
